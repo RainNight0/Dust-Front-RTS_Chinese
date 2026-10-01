@@ -41,24 +41,15 @@ powershell -ExecutionPolicy Bypass -File build.ps1 -OutFile "dist\patch.exe"
 Common Controls v6，缺少它 walk 界面会在启动时报 `TTM_ADDTOOL failed`。
 `rsrc.syso` 属于构建产物，已加入 `.gitignore`，请勿直接 `go build` 而不经过 `build.ps1`。
 
-## 发布新版本
-
-发布由 GitHub Actions 手动触发，不会因为推送代码自动发版：
-
-1. 打开仓库的 **Actions** 页面，选择左侧的 **Build Release**。
-2. 点击右侧 **Run workflow**，填写版本号（例如 `v1.0.0`）。
-   - 可选勾选 **Pre-release** 标记为预发布。
-   - 可选勾选 **draft** 先创建草稿，确认无误后再手动发布。
-3. 运行结束后会自动创建同名的 tag 与 Release，并附带
-   `Dust-Front-RTS-Demo-Chinese-Localization-<版本号>.zip`。
-
-zip 压缩包内包含汉化补丁 exe 与 `使用说明.txt`。
-
 ## 说明
 
 - 补丁内容内嵌在程序中（`assets/resources.assets`），安装时会写入
   `<游戏目录>\Dust Front RTS_Data\resources.assets`。
 - 本仓库仅包含汉化补丁工具与补丁数据，游戏本体版权归原作者所有。
+
+## 鸣谢
+
+本项目由 [`爱吃白饭的蓝色大肥鱼`](https://platform.deepseek.com/) 提供技术支持
 
 ## 许可证
 
