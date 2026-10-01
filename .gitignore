@@ -1,0 +1,9 @@
+# 构建产物
+*.exe
+*.syso
+/dist/
+/temp/
+
+# Go
+*.test
+*.out
