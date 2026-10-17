@@ -1,4 +1,4 @@
-module dustfront-hanhua-patcher
+module dustfront-chinese-patcher
 
 go 1.26.2
 

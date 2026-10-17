@@ -28,7 +28,11 @@ const (
 	gameDirName   = "Dust Front RTS Demo"
 	dataDirName   = "Dust Front RTS_Data"
 	assetFileName = "resources.assets"
-	cacheDirName  = "DustFrontRTS_Hanhua"
+	cacheDirName  = "DustFrontRTS_Chinese"
+
+	// legacyCacheDirName 是 v1.0.x 使用的旧缓存目录名，
+	// 仅在启动时用于把老用户的备份迁移到 cacheDirName。
+	legacyCacheDirName = "DustFrontRTS_Hanhua"
 )
 
 var (
@@ -48,6 +52,11 @@ func fileExists(p string) bool {
 	return err == nil && !fi.IsDir()
 }
 
+func dirExists(p string) bool {
+	fi, err := os.Stat(p)
+	return err == nil && fi.IsDir()
+}
+
 func exeDir() (string, error) {
 	exe, err := os.Executable()
 	if err != nil {
@@ -59,13 +68,36 @@ func exeDir() (string, error) {
 	return filepath.Dir(exe), nil
 }
 
-// cacheRoot 返回 %LocalAppData%\DustFrontRTS_Hanhua
+// cacheRoot 返回 %LocalAppData%\DustFrontRTS_Chinese
 func cacheRoot() (string, error) {
 	base, err := os.UserCacheDir()
 	if err != nil || base == "" {
 		return "", fmt.Errorf("无法定位 AppData 缓存目录")
 	}
 	return filepath.Join(base, cacheDirName), nil
+}
+
+// migrateLegacyCache 把 v1.0.x 的 %LocalAppData%\DustFrontRTS_Hanhua
+// 迁移到新的缓存目录，避免老用户升级后原始文件备份失联、无法还原。
+// 新目录已存在时不做任何事，避免覆盖。
+func migrateLegacyCache() {
+	base, err := os.UserCacheDir()
+	if err != nil || base == "" {
+		return
+	}
+	oldDir := filepath.Join(base, legacyCacheDirName)
+	newDir := filepath.Join(base, cacheDirName)
+	if !dirExists(oldDir) || dirExists(newDir) {
+		return
+	}
+	if os.Rename(oldDir, newDir) == nil {
+		return
+	}
+	// 整个目录改名失败（可能被占用）时，至少把原始文件备份搬过去
+	oldBackup := backupPath(oldDir)
+	if fileExists(oldBackup) {
+		_ = copyFile(oldBackup, backupPath(newDir))
+	}
 }
 
 func backupPath(root string) string {
@@ -342,6 +374,10 @@ func centerOnScreen(mw *walk.MainWindow) {
 
 func main() {
 	var mw *walk.MainWindow
+
+	// v1.0.x 升级上来的用户：把旧缓存目录迁移到新名字，
+	// 否则他们备份的原始文件会失联，「还原游戏文件」将不可用。
+	migrateLegacyCache()
 
 	btnSize := Size{Width: 230, Height: 48}
 
