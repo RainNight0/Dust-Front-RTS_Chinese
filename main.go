@@ -24,7 +24,7 @@ var patchData []byte
 
 const (
 	appTitle      = "Dust Front RTS Demo 汉化补丁"
-	appVersion    = "v1.0"
+	appVersion    = "v1.1.0"
 	gameDirName   = "Dust Front RTS Demo"
 	dataDirName   = "Dust Front RTS_Data"
 	assetFileName = "resources.assets"
